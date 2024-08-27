@@ -41,4 +41,3 @@ void generateSoundex(const char *name, char *soundex) {
 }
 
 #endif // SOUNDEX_H
-#endif // SOUNDEX_H
