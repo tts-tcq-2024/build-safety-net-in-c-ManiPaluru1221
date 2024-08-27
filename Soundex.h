@@ -1,39 +1,43 @@
-#ifndef SOUNDEX_H
 #define SOUNDEX_H
 
-#include "Soundex.h"
 #include <ctype.h>
 #include <string.h>
+#include <stdio.h>
 
+char calculatesoundexcode(char c) {
+    static const char codeTable[26] = {
+        '0', '1', '2', '3', '0', '1', '2', '0', '0', // A-I
+        '2', '2', '4', '5', '5', '0', '1', '2', '6', // J-R
+        '2', '3', '0', '1', '0', '2', '0', '2'      // S-Z
+    };
+     c = toupper(c);
+    if (isalpha(c)) {
+        return codeTable[c - 'A'];
+    }
+    return '0';
+}  
+
+int updateSoundexcode(char code, int sIndex, char *soundex) {
+    int notZero = code != '0';
+    if (notZero) {
+        soundex[sIndex] = code;
+        return ++sIndex;
+    } 
+    soundex[sIndex] = soundex[sIndex];
+    return sIndex;
+}
+    
 void generateSoundex(const char *name, char *soundex) {
-    int len = strlen(name);
     soundex[0] = toupper(name[0]);
     int sIndex = 1;
-    char arr[128];
-    arr['B'] = '1';
-    arr['F'] = '1';
-    arr['P'] = '1';
-    arr['V'] = '1';
-    arr['C'] = '2';
-    arr['G'] = '2'; arr['J'] = '2'; arr['K'] = '2'; arr['Q'] = '2'; arr['S'] = '2'; arr['X'] = '2'; arr['Z'] = '2';
-    arr['D'] = '3'; arr['T'] = '3';
-    arr['L'] = '4';
-    arr['M'] = '5'; arr['N'] = '5';
-    arr['R'] = '6';
-    arr['A'] = '0'; arr['E'] = '0'; arr['I'] = '0'; arr['O'] = '0'; arr['U'] = '0'; arr['H'] = '0'; arr['W'] = '0'; arr['Y'] = '0';
-    
-    for (int i = 1; i < len && sIndex < 4; i++) {
-        char code = arr[toupper(name[i])];
-        if (code != '0' && code != soundex[sIndex - 1]) {
-            soundex[sIndex++] = code;
-        }
-    }
-    
-    while (sIndex < 4) {
-        soundex[sIndex++] = '0';
-    }
 
+     for (int i = 1; name[i] != '\0' && sIndex <=3; i++) {
+        char code = getSoundexCode(name[i]);
+        sIndex = updateSoundex(code, sIndex, soundex); 
+    }
+    memset(soundex + sIndex, '0', 4 - sIndex);
     soundex[4] = '\0';
 }
 
+#endif // SOUNDEX_H
 #endif // SOUNDEX_H
